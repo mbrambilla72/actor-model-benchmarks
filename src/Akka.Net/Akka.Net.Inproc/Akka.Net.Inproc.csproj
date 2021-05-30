@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>ActorModelBenchmarks.Akka.Net.Inproc</AssemblyName>
     <RootNamespace>ActorModelBenchmarks.Akka.Net.Inproc</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.3.4" />
+    <PackageReference Include="Akka" Version="1.4.20" />
   </ItemGroup>
 
   <ItemGroup>

@@ -128,8 +128,9 @@ namespace ActorModelBenchmarks.ProtoActor.PingPong
 
 
             var countdown = new CountdownEvent(numberOfClients * 2);
-            var waitForStartsActorProps = Actor.FromProducer(() => new WaitForStarts(countdown));
-            var waitForStartsActor = Actor.SpawnNamed(waitForStartsActorProps, $"wait-for-starts-{throughput}-{repeat}");
+            var waitForStartsActorProps = Props.FromProducer(() => new WaitForStarts(countdown));
+            var sys = new ActorSystem();
+            var waitForStartsActor = sys.Root.SpawnNamed(waitForStartsActorProps, $"wait-for-starts-{throughput}-{repeat}");
 
             var clients = new List<PID>();
             var destinations = new List<PID>();
@@ -140,21 +141,21 @@ namespace ActorModelBenchmarks.ProtoActor.PingPong
 
             for (var i = 0; i < numberOfClients; i++)
             {
-                var destinationProps = Actor.FromProducer(() => new Destination()).WithDispatcher(d);
-                var destination = Actor.SpawnNamed(destinationProps, $"destination-{i}-{throughput}-{repeat}");
+                var destinationProps = Props.FromProducer(() => new Destination()).WithDispatcher(d);
+                var destination = sys.Root.SpawnNamed(destinationProps, $"destination-{i}-{throughput}-{repeat}");
 
                 destinations.Add(destination);
 
                 var ts = new TaskCompletionSource<bool>();
                 tasks.Add(ts.Task);
 
-                var clientProps = Actor.FromProducer(() => new ClientActor(destination, repeatsPerClient, ts)).WithDispatcher(d);
-                var client = Actor.SpawnNamed(clientProps, $"client-{i}-{throughput}-{repeat}");
+                var clientProps = Props.FromProducer(() => new ClientActor(destination, repeatsPerClient, ts)).WithDispatcher(d);
+                var client = sys.Root.SpawnNamed(clientProps, $"client-{i}-{throughput}-{repeat}");
 
                 clients.Add(client);
 
-                client.Tell(started);
-                destination.Tell(started);
+                sys.Root.Send(client, started);
+                sys.Root.Send(destination,started);
             }
 
             if (!countdown.Wait(TimeSpan.FromSeconds(10)))
@@ -169,7 +170,7 @@ namespace ActorModelBenchmarks.ProtoActor.PingPong
             clients.ForEach(c =>
             {
                 var run = new Messages.Run {Sender = c};
-                c.Tell(run);
+                sys.Root.Send(c, run);
             });
 
             await Task.WhenAll(tasks.ToArray());
@@ -229,14 +230,14 @@ namespace ActorModelBenchmarks.ProtoActor.PingPong
                 switch (message)
                 {
                     case Messages.Msg msg:
-                        msg.Sender.Tell(message);
-                        return Actor.Done;
+                        context.Send(msg.Sender,message);
+                        return Task.CompletedTask;
                     case Messages.Started started:
-                        started.Sender.Tell(message);
-                        return Actor.Done;
+                        context.Send(started.Sender,message);
+                        return Task.CompletedTask;
                 }
 
-                return Actor.Done;
+                return Task.CompletedTask;
             }
         }
 
@@ -254,7 +255,7 @@ namespace ActorModelBenchmarks.ProtoActor.PingPong
                 if (context.Message is Messages.Started)
                     _countdown.Signal();
 
-                return Actor.Done;
+                return Task.CompletedTask;
             }
         }
 

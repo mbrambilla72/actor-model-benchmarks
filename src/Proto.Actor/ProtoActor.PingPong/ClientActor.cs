@@ -29,28 +29,28 @@ namespace ActorModelBenchmarks.ProtoActor.PingPong
                     _received++;
                     if (_sent < _repeat)
                     {
-                        _actor.Tell(message);
+                        context.Send(_actor, message);
                         _sent++;
                     }
                     else if (_received >= _repeat)
                     {
                         _latch.SetResult(true);
                     }
-                    return Actor.Done;
+                    return Task.CompletedTask;
                 case Messages.Run _:
                     var msg = new Messages.Msg {Sender = context.Self};
                     for (var i = 0; i < Math.Min(1000, _repeat); i++)
                     {
-                        _actor.Tell(msg);
+                        context.Send(_actor,msg);
                         _sent++;
                     }
-                    return Actor.Done;
+                    return Task.CompletedTask;
                 case Messages.Started started:
-                    started.Sender.Tell(message);
-                    return Actor.Done;
+                    context.Send(started.Sender, message);
+                    return Task.CompletedTask;
             }
 
-            return Actor.Done;
+            return Task.CompletedTask;
         }
     }
 }

@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>ActorModelBenchmarks.ProtoActor.Pi.InProc</AssemblyName>
     <RootNamespace>ActorModelBenchmarks.ProtoActor.Pi.InProc</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Proto.Actor" Version="0.1.16" />
+    <PackageReference Include="Proto.Actor" Version="0.17.0" />
     <PackageReference Include="Proto.Router" Version="0.1.16" />
   </ItemGroup>
 

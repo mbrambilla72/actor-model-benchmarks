@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>ActorModelBenchmarks.ProtoActor.Pi.Actors</AssemblyName>
     <RootNamespace>ActorModelBenchmarks.ProtoActor.Pi.Actors</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Proto.Actor" Version="0.1.16" />
+    <PackageReference Include="Proto.Actor" Version="0.17.0" />
   </ItemGroup>
 
   <ItemGroup>
